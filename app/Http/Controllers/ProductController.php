@@ -9,14 +9,13 @@ class ProductController extends Controller
 {
     public function index()
     {
+        $query = Product::with('categories')->orderBy('created_at', 'DESC');
         if (request()->categorie) {
-            $products = Product::with('categories')->whereHas('categories', function ($query) {
+            $query = $query->whereHas('categories', function ($query) {
                 $query->where('slug', request()->categorie);
-            })->orderBy('created_at', 'DESC')->paginate(6);
-        } else {
-            $products = Product::with('categories')->orderBy('created_at', 'DESC')->paginate(6);
+            })->orderBy('created_at', 'DESC');
         }
-
+        $products = $query->paginate(6);
         return view('products.index')->with('products', $products);
     }
 
